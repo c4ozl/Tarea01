@@ -1,0 +1,120 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data.SqlClient;
+
+namespace tareaz
+{
+    class Calificaqcion
+    {
+        public Calificaqcion(byte argCodigo,
+            DateTime argFechaHoraRegistro,
+            bool argHabilitado,
+            string argNombreBreve,
+            string argNombreCompleto) 
+        {
+            Codigo = argCodigo;
+            FechaHoraResgistro=argFechaHoraRegistro;
+            Habilitado=argHabilitado;
+            NombreBreve = argNombreBreve;
+            NombreCompleto = argNombreCompleto;
+
+        }
+        private byte _Codigo;
+
+        public byte Codigo
+        {
+            get { return _Codigo; }
+            set { _Codigo = value; }
+        }
+        private string _Descripcion;
+
+        public string Descripcion
+        {
+            get { return _Descripcion; }
+            set { _Descripcion = value; }
+        }
+        private DateTime _FechaHoraResgistro;
+
+        public DateTime FechaHoraResgistro
+        {
+            get { return _FechaHoraResgistro; }
+            set { _FechaHoraResgistro = value; }
+        }
+        private bool _Habilitado;
+
+        public bool Habilitado
+        {
+            get { return _Habilitado; }
+            set { _Habilitado = value; }
+        }
+        private string _NombreBreve;
+
+        public string NombreBreve
+        {
+            get { return _NombreBreve; }
+            set { _NombreBreve = value; }
+        }
+        private string _NombreCompleto;
+
+        public string NombreCompleto
+        {
+            get { return _NombreCompleto; }
+            set { _NombreCompleto = value; }
+        }
+        public void insertar()
+        
+        {
+            SqlConnection miconexion;
+            miconexion = new SqlConnection("SERVER=WA27-2;DATABASE=EjercicioSEmAnACero;USER=sa;PWD=continental");
+           //Paso 03: Ejecutar el comando
+            miconexion.Open(); //Abrir la conexión
+          
+            miconexion.Close(); 
+        }
+        public static List<Calificaqcion> Listar()
+        {
+            List<Calificaqcion> Milistado = new List<Calificaqcion>();
+
+            SqlConnection miConexion;
+            
+            miConexion = new SqlConnection("SERVER=WA27-2;DATABASE=EjercicioSEmAnACero;USER=sa;PWD=continental");
+             SqlCommand elComando;
+            elComando = new SqlCommand("usp_Calificaqcion_Listar_Todo", miConexion);
+            elComando.CommandType = System.Data.CommandType.StoredProcedure;
+        
+            miConexion.Open();
+            SqlDataReader LOSDATOS;
+            LOSDATOS = elComando.ExecuteReader();
+            //LOSDATOS.Read()==true quiere decir "Mientras haya datos"
+            while (LOSDATOS.Read()==true)
+            {
+                Calificaqcion filaDeBaseDeDatos;
+                filaDeBaseDeDatos = new Calificaqcion (
+                           Convert.ToString(LOSDATOS["Codigo"]),
+                           Convert.ToByte(LOSDATOS["Descripcion"]),
+                           Convert.ToDateTime(LOSDATOS["FechaHoraRegistro"]),
+                           Convert.ToString(LOSDATOS["Habilitado"]),
+                           Convert.ToString(LOSDATOS["NombreBreve"]),
+                           Convert.ToString(LOSDATOS["NombreCompleto"])
+
+                                                );
+                //Con esta línea estamos agregando cada fila de la
+                //base de datos capturado en un objeto de la clase
+                //Cliente a Milistado
+                Milistado.Add(filaDeBaseDeDatos);
+            }                        
+            miConexion.Close(); 
+
+            return Milistado;
+        }
+
+        }
+        
+        
+        
+        
+    }
+
